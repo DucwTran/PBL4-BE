@@ -1,0 +1,14 @@
+import "dotenv/config";
+
+export const env = {
+  MONGO_URL: process.env.MONGO_URL,
+  APP_PORT: process.env.APP_PORT,
+
+  AUTHOR: process.env.AUTHOR,
+
+  ACCESS_TOKEN_SECRET_SIGNATURE: process.env.ACCESS_TOKEN_SECRET_SIGNATURE,
+  ACCESS_TOKEN_LIFE: process.env.ACCESS_TOKEN_LIFE,
+
+  REFRESH_TOKEN_SECRET_SIGNATURE: process.env.REFRESH_TOKEN_SECRET_SIGNATURE,
+  REFRESH_TOKEN_LIFE: process.env.REFRESH_TOKEN_LIFE,
+};
