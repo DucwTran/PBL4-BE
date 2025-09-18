@@ -3,7 +3,7 @@ import express from "express";
 import { errorHandler } from "./handlers/error-handle.js";
 import cookieParser from "cookie-parser";
 import { env } from "./config/environment.js";
-import setupRoutes from "./routes/v1/index.js";
+import setupRoutes from "./routes/v1/index.route.js";
 import connect from "./config/mongodb.js";
 
 dotenv.config();

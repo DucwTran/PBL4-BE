@@ -1,10 +1,9 @@
 {
-  "name": "pbl4_elearning",
+  "name": "pbl4",
   "private": true,
   "version": "1.0.0",
   "author": "TranCongDuc",
   "description": "PBL4 - Elearning",
-  "type": "module",
   "scripts": {
     "lint": "eslint src --ext js --report-unused-disable-directives --max-warnings 0",
     "clean": "rm -rf build && mkdir build",
@@ -35,12 +34,12 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.22.10",
-    "@babel/core": "^7.22.10",
+    "@babel/core": "^7.28.4",
     "@babel/eslint-parser": "^7.22.10",
     "@babel/node": "^7.22.10",
     "@babel/plugin-transform-runtime": "^7.22.10",
-    "@babel/preset-env": "^7.22.10",
-    "babel-plugin-module-resolver": "^5.0.0",
+    "@babel/preset-env": "^7.28.3",
+    "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^8.47.0",
     "nodemon": "^3.0.1"
   }
