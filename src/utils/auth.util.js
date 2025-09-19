@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import JWT from "jsonwebtoken";
 
 export default class AuthUtil {
   hashPassword = async (password) => {
@@ -10,5 +11,24 @@ export default class AuthUtil {
   comparePassword = async (inputPassword, hashedPassword) => {
     const check = await bcrypt.compare(inputPassword, hashedPassword);
     return check;
+  };
+
+  generateToken = async (userInfo, secretSignature, tokenLife) => {
+    try {
+      return JWT.sign(userInfo, secretSignature, {
+        algorithm: "HS256",
+        expiresIn: tokenLife,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+
+  verifyToken = async (token, secretSignature) => {
+    try {
+      return JWT.verify(token, secretSignature);
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 }
