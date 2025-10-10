@@ -10,6 +10,7 @@ export default class AuthValidation {
       "any.required": "Password là bắt buộc",
     }),
   });
+  
   static loginSchema = Joi.object({
     email: Joi.string().email().required().trim().messages({
       "string.email": "Email không hợp lệ",

@@ -20,7 +20,7 @@ export default class userService {
     if (!user) {
       throw new NotFoundError("User not found!");
     }
-    return user;
+    return pickUser(user);
   };
 
   createUser = async (userData) => {
@@ -106,6 +106,5 @@ export default class userService {
     }
 
     return await this.userModel.deleteOne({ _id: userId });
-    
   };
 }

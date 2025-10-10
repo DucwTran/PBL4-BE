@@ -1,6 +1,7 @@
 import express from "express";
 import authController from "~/controllers/auth.controller";
 import asyncHandler from "~/middlewares/asyncHandler";
+import authMiddleware from "~/middlewares/auth.middleware";
 import ValidateMiddleware from "~/middlewares/validate.middleware";
 import User from "~/models/user.model";
 import authService from "~/services/auth.service";
@@ -13,13 +14,14 @@ export default class AuthRoute {
     this.authController = new authController(
       new authService(User, new AuthUtil())
     );
+    this.authMiddleware = new authMiddleware(new AuthUtil());
     this.setupRoutes();
   }
 
   setupRoutes() {
     // [POST] register
     this.router.post(
-      "register",
+      "/register",
       ValidateMiddleware.validate(AuthValidation.registerSchema),
       asyncHandler(this.authController.register)
     );
@@ -32,12 +34,28 @@ export default class AuthRoute {
     );
 
     //[POST] Logout
-    this.router.post("/logout", asyncHandler(this.authController.logout));
+    this.router.post(
+      "/logout",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.authController.logout)
+    );
 
     // [POST] refreshAccessToken
     this.router.post(
-      "refreshAccessToken",
+      "/refreshAccessToken",
       asyncHandler(this.authController.refreshAccessToken)
+    );
+
+    // [POST] /forgot-password
+    this.router.post(
+      "/forgot-password",
+      asyncHandler(this.authController.forgotPassword)
+    );
+
+    // [POST] /verify-otp
+    this.router.post(
+      "/verify-otp",
+      asyncHandler(this.authController.verifyOtp)
     );
   }
 

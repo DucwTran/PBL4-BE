@@ -13,6 +13,10 @@ export default class AuthUtil {
     return check;
   };
 
+  generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
   generateToken = async (userInfo, secretSignature, tokenLife) => {
     try {
       return JWT.sign(userInfo, secretSignature, {

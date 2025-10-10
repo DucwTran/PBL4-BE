@@ -15,7 +15,7 @@ export default class authController {
 
   login = async (req, res) => {
     const { email, password } = req.body;
-    const { accessToken, refreshToken } = await this.userService.login(
+    const { accessToken, refreshToken } = await this.authService.login(
       email,
       password
     );
@@ -72,6 +72,26 @@ export default class authController {
     return new OK({
       metadata: { accessToken: accessToken },
       message: "Cấp accessToken mới thành công",
+    }).send(res);
+  };
+
+  forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    const result = await this.authService.sendOtpToMail(email);
+    new OK({
+      result,
+    }).send(res);
+  };
+
+  verifyOtp = async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+    const result = await this.authService.verifyOtpAndResetPassword(
+      email,
+      otp,
+      newPassword
+    );
+    new OK({
+      result,
     }).send(res);
   };
 }

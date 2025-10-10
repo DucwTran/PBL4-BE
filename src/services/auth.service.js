@@ -1,6 +1,11 @@
-import { ConflictRequestError, NotFoundError } from "~/handlers/error.response";
+import {
+  ConflictRequestError,
+  ErrorResponse,
+  NotFoundError,
+} from "~/handlers/error.response";
 import bcrypt from "bcryptjs";
 import { env } from "~/config/environment";
+import transporter from "~/config/mailer.config";
 
 // Dùng http only cookie cho cả accessToken và refreshToken, thay vì trả accessToken cho FE rồi gửi handle ở localStorage và thủ công gán ở header
 
@@ -87,5 +92,46 @@ export default class authService {
     );
 
     return { accessToken };
+  };
+
+  sendOtpToMail = async (email) => {
+    const user = await this.userModel.findOne({ email });
+    if (!user) throw new NotFoundError("Email không tồn tại");
+
+    const otp = this.authUtil.generateOTP();
+    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    user.otp = otp;
+    user.otpExpiresAt = otpExpiresAt;
+    await user.save();
+
+    await transporter.sendMail({
+      from: `"Support" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Mã OTP khôi phục mật khẩu",
+      html: `<p>Mã OTP của bạn là: <b>${otp}</b>. OTP chỉ có hiệu lực 5 phút</p>`,
+    });
+
+    return { message: "Đã gửi OTP tới email." };
+  };
+
+  verifyOtpAndResetPassword = async (email, otp, newPassword) => {
+    const user = await this.userModel.findOne({ email });
+    if (!user || user.otp !== otp || !user.otpExpiresAt) {
+      throw new ErrorResponse(user.otpExpiresAt);
+    }
+    if (user.otpExpiresAt < new Date()) {
+      throw new ErrorResponse("OTP đã hết hạn");
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.otp = null;
+    user.otpExpiresAt = null;
+    await user.save();
+
+    return { message: "Mật khẩu đã được đặt lại thành công" };
   };
 }
