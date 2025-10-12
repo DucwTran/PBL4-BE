@@ -1,6 +1,6 @@
 import { OK } from "~/handlers/success.response";
 import ms from "ms";
-export default class authController {
+export default class AuthController {
   constructor(AuthService) {
     this.authService = AuthService;
   }

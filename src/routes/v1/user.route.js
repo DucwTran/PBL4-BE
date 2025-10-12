@@ -1,20 +1,20 @@
 import express from "express";
-import userController from "~/controllers/user.controller";
+import UserController from "~/controllers/user.controller";
 import asyncHandler from "~/middlewares/asyncHandler";
-import authMiddleware from "~/middlewares/auth.middleware";
+import AuthMiddleware from "~/middlewares/auth.middleware";
 import ValidateMiddleware from "~/middlewares/validate.middleware";
 import User from "~/models/user.model";
-import userService from "~/services/user.service";
+import UserService from "~/services/user.service";
 import AuthUtil from "~/utils/auth.util";
 import UserValidation from "~/validations/user.validation";
 
 export default class UserRoute {
   constructor() {
     this.router = express.Router();
-    this.userController = new userController(
-      new userService(User, new AuthUtil())
+    this.userController = new UserController(
+      new UserService(User, new AuthUtil())
     );
-    this.authMiddleware = new authMiddleware(new AuthUtil());
+    this.authMiddleware = new AuthMiddleware(new AuthUtil());
     this.setupRoutes();
   }
 

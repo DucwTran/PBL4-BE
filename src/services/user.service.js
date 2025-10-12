@@ -2,7 +2,7 @@ import { ConflictRequestError, NotFoundError } from "~/handlers/error.response";
 import { INVALID_UPDATE_USER_FIELDS } from "~/utils/constant";
 import { pickUser } from "~/utils/formatters";
 
-export default class userService {
+export default class UserService {
   constructor(User, AuthUtil) {
     this.userModel = User;
     this.authUtil = AuthUtil;

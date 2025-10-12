@@ -9,7 +9,7 @@ import transporter from "~/config/mailer.config";
 
 // Dùng http only cookie cho cả accessToken và refreshToken, thay vì trả accessToken cho FE rồi gửi handle ở localStorage và thủ công gán ở header
 
-export default class authService {
+export default class AuthService {
   constructor(User, AuthUtil) {
     this.userModel = User;
     this.authUtil = AuthUtil;

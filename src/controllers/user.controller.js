@@ -1,7 +1,7 @@
 import { OK } from "~/handlers/success.response";
 import { pickUser } from "~/utils/formatters";
 
-export default class userController {
+export default class UserController {
   constructor(UserService) {
     this.userService = UserService;
   }

@@ -5,7 +5,7 @@ import {
   GoneError,
 } from "~/handlers/error.response";
 
-export default class authMiddleware {
+export default class AuthMiddleware {
   constructor(AuthUtil) {
     this.authUtil = AuthUtil;
   }
