@@ -6,6 +6,10 @@ import { env } from "./config/environment.js";
 import setupRoutes from "./routes/v1/index.route.js";
 import connect from "./config/mongodb.js";
 
+import { Server } from "socket.io";
+import { createServer } from "http";
+import initSocket from "./sockets/socket.js";
+
 dotenv.config();
 const app = express();
 const port = env.APP_PORT;
@@ -22,6 +26,12 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(port, () => {
+// Tạo HTTP server để gắn socket.io
+const expressServer = createServer(app);
+
+const io = new Server(expressServer);
+initSocket(io);
+
+expressServer.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
