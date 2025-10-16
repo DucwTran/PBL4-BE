@@ -6,6 +6,7 @@ import {
 import bcrypt from "bcryptjs";
 import { env } from "~/config/environment";
 import transporter from "~/config/mailer.config";
+import { pickUser } from "~/utils/formatters";
 
 // Dùng http only cookie cho cả accessToken và refreshToken, thay vì trả accessToken cho FE rồi gửi handle ở localStorage và thủ công gán ở header
 
@@ -133,5 +134,15 @@ export default class AuthService {
     await user.save();
 
     return { message: "Mật khẩu đã được đặt lại thành công" };
+  };
+
+  getProfile = async (userId) => {
+    const user = await this.userModel.findById(userId);
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    return pickUser(user);
   };
 }

@@ -94,4 +94,16 @@ export default class AuthController {
       result,
     }).send(res);
   };
+
+  getProfile = async (req, res) => {
+    const userId = req.user?.id;
+    console.log(userId);
+
+    const result = await this.authService.getProfile(userId);
+
+    return new OK({
+      message: "Get profile successfully",
+      metadata: result,
+    }).send(res);
+  };
 }

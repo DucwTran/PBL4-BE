@@ -57,6 +57,13 @@ export default class AuthRoute {
       "/verify-otp",
       asyncHandler(this.authController.verifyOtp)
     );
+
+    // [GET] /get-profile
+    this.router.get(
+      "/get-profile",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.authController.getProfile)
+    );
   }
 
   getRoute() {

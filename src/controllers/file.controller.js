@@ -73,7 +73,7 @@ export default class FileController {
 
   uploadMultipleFiles = async (req, res) => {
     const userId = req.user?.id;
-    const files = req.files; 
+    const files = req.files;
     const uploadedFiles = await this.fileService.uploadMultipleFiles(
       files,
       userId
@@ -82,6 +82,16 @@ export default class FileController {
     return new OK({
       message: "Upload nhiều file thành công",
       metadata: uploadedFiles,
+    }).send(res);
+  };
+
+  getAllPostsOfMyselfAndFriends = async (req, res) => {
+    const userId = req?.user.id;
+    const result = await this.fileService.getAllPostsOfMyselfAndFriends(userId);
+
+    return new OK({
+      message: "Get successfully",
+      metadata: result,
     }).send(res);
   };
 }

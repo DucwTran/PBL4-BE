@@ -6,8 +6,9 @@ import {
 } from "~/providers/cloudinary.provider";
 
 export default class FileService {
-  constructor(File) {
+  constructor(File, User) {
     this.fileModel = File;
+    this.userModel = User
   }
   createPost = async (file, userId) => {
     try {
@@ -148,5 +149,21 @@ export default class FileService {
     } catch (error) {
       throw new Error("Upload nhiều file thất bại: " + error.message);
     }
+  };
+
+  getAllPostsOfMyselfAndFriends = async (userId) => {
+    const user = await this.userModel.findById(userId).populate("friends");
+    if (!user) {
+      throw new NotFoundError("User not found!");
+    }
+
+    const allIds = [user._id, ...user.friends.map((f) => f._id)];
+
+    const files = await this.fileModel
+      .find({ userId: { $in: allIds } })
+      .sort({ createdAt: -1 }) 
+      .populate("userId", "userName avatar email");
+
+    return files;
   };
 }

@@ -57,4 +57,34 @@ export default class UserController {
       metadata: deleteUser,
     }).send(res);
   };
+
+  sendFriendRequest = async (req, res) => {
+    const { userId, friendId } = req.body;
+    const result = await this.userService.sendFriendRequest(userId, friendId);
+
+    return new OK({
+      message: "Sent successfully!",
+      metadata: result,
+    }).send(res);
+  };
+
+  acceptFriendRequest = async (req, res) => {
+    const { userId, friendId } = req.body;
+    const result = await this.userService.acceptFriendRequest(userId, friendId);
+
+    return new OK({
+      message: "Accepted successfully!",
+      metadata: result,
+    }).send(res);
+  };
+
+  rejectFriendRequest = async (req, res) => {
+    const { userId, friendId } = req.body;
+    const result = await this.userService.rejectFriendRequest(userId, friendId);
+
+    return new OK({
+      message: "Rejected successfully!",
+      metadata: result,
+    }).send(res);
+  };
 }

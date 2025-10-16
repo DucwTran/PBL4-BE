@@ -1,4 +1,8 @@
-import { ConflictRequestError, NotFoundError } from "~/handlers/error.response";
+import {
+  BadRequestError,
+  ConflictRequestError,
+  NotFoundError,
+} from "~/handlers/error.response";
 import { INVALID_UPDATE_USER_FIELDS } from "~/utils/constant";
 import { pickUser } from "~/utils/formatters";
 
@@ -106,5 +110,100 @@ export default class UserService {
     }
 
     return await this.userModel.deleteOne({ _id: userId });
+  };
+
+  sendFriendRequest = async (userId, friendId) => {
+    if (userId.toString() === friendId.toString()) {
+      throw new BadRequestError("Không thể gửi lời mời cho chính mình!");
+    }
+
+    const user = await this.userModel.findById(userId);
+    const friend = await this.userModel.findById(friendId);
+
+    if (!friend) throw new NotFoundError("Người dùng không tồn tại!");
+
+    if (user.friends.includes(friendId)) {
+      throw new BadRequestError("Hai người đã là bạn bè!");
+    }
+
+    if (user.sentRequests.includes(friendId)) {
+      throw new BadRequestError("Đã gửi lời mời kết bạn rồi!");
+    }
+
+    if (user.receivedRequests.includes(friendId)) {
+      throw new BadRequestError("Người này đã gửi lời mời cho bạn trước đó!");
+    }
+
+    user.sentRequests.push(friendId);
+    friend.receivedRequests.push(userId);
+
+    await user.save();
+    await friend.save();
+
+    return {
+      message: "Đã gửi lời mời kết bạn thành công!",
+      userId,
+      friendId,
+    };
+  };
+
+  acceptFriendRequest = async (userId, friendId) => {
+    const user = await this.userModel.findById(userId);
+    const friend = await this.userModel.findById(friendId);
+
+    if (!friend) throw new NotFoundError("Người gửi lời mời không tồn tại!");
+
+    if (!user.receivedRequests.includes(friendId)) {
+      throw new BadRequestError("Không có lời mời kết bạn từ người này!");
+    }
+
+    // Cập nhật danh sách bạn bè
+    user.friends.push(friendId);
+    friend.friends.push(userId);
+
+    // Xóa khỏi danh sách lời mời
+    user.receivedRequests = user.receivedRequests.filter(
+      (id) => id.toString() !== friendId.toString()
+    );
+    friend.sentRequests = friend.sentRequests.filter(
+      (id) => id.toString() !== userId.toString()
+    );
+
+    await user.save();
+    await friend.save();
+
+    return {
+      message: "Đã chấp nhận lời mời kết bạn!",
+      userId,
+      friendId,
+    };
+  };
+
+  rejectFriendRequest = async (userId, friendId) => {
+    const user = await this.userModel.findById(userId);
+    const friend = await this.userModel.findById(friendId);
+
+    if (!friend) throw new NotFoundError("Người gửi lời mời không tồn tại!");
+
+    if (!user.receivedRequests.includes(friendId)) {
+      throw new BadRequestError("Không có lời mời kết bạn từ người này!");
+    }
+
+    // Xóa khỏi danh sách lời mời
+    user.receivedRequests = user.receivedRequests.filter(
+      (id) => id.toString() !== friendId.toString()
+    );
+    friend.sentRequests = friend.sentRequests.filter(
+      (id) => id.toString() !== userId.toString()
+    );
+
+    await user.save();
+    await friend.save();
+
+    return {
+      message: "Đã từ chối lời mời kết bạn!",
+      userId,
+      friendId,
+    };
   };
 }

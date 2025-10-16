@@ -66,6 +66,27 @@ export default class UserRoute {
       asyncHandler(this.authMiddleware.isAdmin),
       asyncHandler(this.userController.deleteUser)
     );
+
+    // [POST] Gửi lời mời kết bạn
+    this.router.post(
+      "/add-friend",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.userController.sendFriendRequest)
+    );
+
+    // [POST] Chấp nhận lời mời kết bạn
+    this.router.post(
+      "/accept-friend",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.userController.acceptFriendRequest)
+    );
+
+    // [POST] Từ chối lời mời kết bạn
+    this.router.post(
+      "/reject-friend",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.userController.rejectFriendRequest)
+    );
   }
 
   getRoute() {
