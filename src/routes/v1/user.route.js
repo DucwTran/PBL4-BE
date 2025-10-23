@@ -11,10 +11,12 @@ import UserValidation from "~/validations/user.validation";
 export default class UserRoute {
   constructor() {
     this.router = express.Router();
-    this.userController = new UserController(
-      new UserService(User, new AuthUtil())
-    );
-    this.authMiddleware = new AuthMiddleware(new AuthUtil());
+
+    this.authUtil = new AuthUtil();
+
+    this.userService = new UserService(User, this.authUtil);
+    this.authMiddleware = new AuthMiddleware(this.authUtil);
+    this.userController = new UserController(this.userService);
     this.setupRoutes();
   }
 
@@ -25,6 +27,12 @@ export default class UserRoute {
       asyncHandler(this.authMiddleware.isAuthorized),
       asyncHandler(this.authMiddleware.isAdmin),
       asyncHandler(this.userController.getAllUsers)
+    );
+    // [GET]  Total Number of Friend by User ID - user
+    this.router.get(
+      "/friends/counting",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.userController.getTotalFriends)
     );
 
     // [GET] get user by id: user, admin
@@ -37,17 +45,17 @@ export default class UserRoute {
     // [POST] create user: admin
     this.router.post(
       "/",
-      ValidateMiddleware.validate(UserValidation.createUserSchema),
       asyncHandler(this.authMiddleware.isAuthorized),
       asyncHandler(this.authMiddleware.isAdmin),
+      ValidateMiddleware.validate(UserValidation.createUserSchema),
       asyncHandler(this.userController.createUser)
     );
 
     // [PUT] update user by id: user, admin
     this.router.put(
       "/:id",
-      ValidateMiddleware.validate(UserValidation.updateUserSchema),
       asyncHandler(this.authMiddleware.isAuthorized),
+      ValidateMiddleware.validate(UserValidation.updateUserSchema),
       asyncHandler(this.userController.updateUser)
     );
 
@@ -87,6 +95,7 @@ export default class UserRoute {
       asyncHandler(this.authMiddleware.isAuthorized),
       asyncHandler(this.userController.rejectFriendRequest)
     );
+
   }
 
   getRoute() {

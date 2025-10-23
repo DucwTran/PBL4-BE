@@ -109,7 +109,7 @@ export default class FileService {
 
     // Trả về object gồm dữ liệu và metadata
     return {
-      buffer: Buffer.from(response.data, "binary"),
+      buffer: Buffer.from(response.data),
       mimeType: file.mimeType,
       imageName: file.imageName,
     };

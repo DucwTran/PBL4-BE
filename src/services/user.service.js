@@ -5,7 +5,7 @@ import {
 } from "~/handlers/error.response";
 import { INVALID_UPDATE_USER_FIELDS } from "~/utils/constant";
 import { pickUser } from "~/utils/formatters";
-
+import mongoose from "mongoose";
 export default class UserService {
   constructor(User, AuthUtil) {
     this.userModel = User;
@@ -32,7 +32,7 @@ export default class UserService {
 
     // Kiểm tra email đã dùng chưa
     const emailExisting = await this.userModel.find({ email: email });
-    if (!emailExisting) {
+    if (emailExisting.length > 0) {
       throw new ConflictRequestError("Email was exist!");
     }
 
@@ -59,23 +59,26 @@ export default class UserService {
       throw new NotFoundError("User not found!");
     }
 
-    //Kiểm tra email mới có tồn tại không
-    const existingEmail = await this.userModel.findOne({
-      email: updateData.email,
-    });
-    if (existingEmail && existingEmail._id.toString() != user._id.toString()) {
-      throw new ConflictRequestError("Email was existing!");
-    }
-    if (
-      existingEmail._id.toString() == user._id.toString() &&
-      updateData.email
-    ) {
-      delete updateData.email;
+    // Kiểm tra email mới (chỉ khi có updateData.email)
+    if (updateData.email) {
+      const existingEmail = await this.userModel.findOne({
+        email: updateData.email,
+      });
+      // Kiểm tra existingEmail trước khi dùng
+      if (existingEmail) {
+        if (existingEmail._id.toString() !== user._id.toString()) {
+          throw new ConflictRequestError("Email already exists!");
+        }
+        // Email trùng với email hiện tại → không cần update
+        delete updateData.email;
+      }
     }
 
     //Nếu cập nhập mật khẩu thì phải hash rồi mới lưu
     if (updateData.password) {
-      const hashPassword = this.authUtil.hashPassword(updateData.password);
+      const hashPassword = await this.authUtil.hashPassword(
+        updateData.password
+      );
       updateData.password = hashPassword;
     }
 
@@ -205,5 +208,17 @@ export default class UserService {
       userId,
       friendId,
     };
+  };
+
+  getTotalFriends = async (userId) => {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new BadRequestError("ID không hợp lệ!");
+    }
+    const user = await this.userModel.findById(userId);
+    console.log(user);
+    if (!user) {
+      throw new NotFoundError("Không tìm thấy người dùng!");
+    }
+    return { totalFriends: user.friends.length };
   };
 }

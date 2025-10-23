@@ -61,11 +61,12 @@ export default class FileController {
     const { buffer, mimeType, imageName } = await this.fileService.downloadFile(
       id
     );
+    const imageExt = mimeType.split("/")[1];
 
     // Thiết lập header và gửi file về client
     res.set({
       "Content-Type": mimeType,
-      "Content-Disposition": `attachment; filename="${imageName}"`,
+      "Content-Disposition": `inline; filename="${imageName}.${imageExt}"`,
     });
 
     res.end(buffer);

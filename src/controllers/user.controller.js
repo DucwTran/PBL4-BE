@@ -30,10 +30,9 @@ export default class UserController {
   };
 
   updateUser = async (req, res) => {
-    const updatedUser = await this.userService.updateUser(
-      req.params.id,
-      req.body
-    );
+    const userId = req.params.id;
+    const updateData = req.body;
+    const updatedUser = await this.userService.updateUser(userId, updateData);
     return new OK({
       message: "Updated successfully!",
       metadata: updatedUser,
@@ -84,6 +83,16 @@ export default class UserController {
 
     return new OK({
       message: "Rejected successfully!",
+      metadata: result,
+    }).send(res);
+  };
+
+  getTotalFriends = async (req, res) => {
+    const userId = req.user.id;
+    const result = await this.userService.getTotalFriends(userId);
+
+    return new OK({
+      message: "get post successfully!",
       metadata: result,
     }).send(res);
   };

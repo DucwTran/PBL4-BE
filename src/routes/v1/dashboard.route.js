@@ -24,7 +24,6 @@ export default class DashboardRoute {
       asyncHandler(this.authMiddleware.isAuthorized),
       asyncHandler(this.dashboardController.getTotalStorageUsedByUserId)
     );
-    // [GET]  Total Number of Friend by User ID - user
 
     // [GET]  Total Number of Users - admin
     this.router.get(

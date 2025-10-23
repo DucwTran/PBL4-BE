@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import { ErrorResponse, NotFoundError } from "~/handlers/error.response";
 
 export default class ChatService {
-  constructor(chatModel) {
+  constructor(chatModel, userModel) {
     this.chatModel = chatModel;
+    this.userModel = userModel;
   }
 
   createChat = async (firstId, secondId) => {
@@ -18,6 +19,27 @@ export default class ChatService {
       ) {
         throw new NotFoundError("Invalid user ID format");
       }
+
+      const [user1, user2] = await Promise.all([
+        this.userModel.findById(firstObjectId).select("friends"),
+        this.userModel.findById(secondObjectId).select("friends"),
+      ]);
+
+      const isFriend =
+        user1.friends.some((friendId) => friendId.equals(secondObjectId)) &&
+        user2.friends.some((friendId) => friendId.equals(firstObjectId));
+
+      if (!isFriend) {
+        throw new ErrorResponse(
+          "Hai người chưa kết bạn, không thể tạo cuộc trò chuyện!",
+          403
+        );
+      }
+
+      if (!user1 || !user2) {
+        throw new NotFoundError("Không tìm thấy người dùng!");
+      }
+
       const existingChat = await this.chatModel.findOne({
         members: { $all: [firstId, secondId] },
       });

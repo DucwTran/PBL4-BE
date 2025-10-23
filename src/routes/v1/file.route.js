@@ -63,6 +63,7 @@ export default class FileRoute {
     // [DELETE]: delete hard post by id - admin
     this.router.delete(
       "/delete-hard/:id",
+      asyncHandler(this.authMiddleware.isAuthorized),
       asyncHandler(this.authMiddleware.isAdmin),
       asyncHandler(this.fileController.hardDeletePost)
     );

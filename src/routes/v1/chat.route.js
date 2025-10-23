@@ -5,11 +5,12 @@ import AuthUtil from "~/utils/auth.util";
 import Chat from "~/models/chat.model";
 import ChatService from "~/services/chat.service";
 import ChatController from "~/controllers/chat.controller";
+import User from "~/models/user.model";
 
 export default class ChatRoute {
   constructor() {
     this.router = express.Router();
-    this.chatController = new ChatController(new ChatService(Chat));
+    this.chatController = new ChatController(new ChatService(Chat, User));
     this.authMiddleware = new AuthMiddleware(new AuthUtil());
     this.setupRoutes();
   }
