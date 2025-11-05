@@ -15,7 +15,7 @@ export default class AuthController {
 
   login = async (req, res) => {
     const { email, password } = req.body;
-    const { accessToken, refreshToken } = await this.authService.login(
+    const { accessToken, refreshToken, user } = await this.authService.login(
       email,
       password
     );
@@ -35,7 +35,7 @@ export default class AuthController {
 
     return new OK({
       message: "Login successfully!",
-      metadata: { accessToken },
+      metadata: { accessToken, user },
     }).send(res);
   };
 
