@@ -11,19 +11,21 @@ export default class AuthMiddleware {
   }
 
   isAuthorized = async (req, res, next) => {
-    const accessTokenFromCookie = req.cookies?.accessToken;
+    // const accessTokenFromCookie = req.cookies?.accessToken;
+    const accessTokenFromHeader = req.headers?.authorization?.split(' ')[1]
+    console.log(accessTokenFromHeader)
     try {
-      if (!accessTokenFromCookie) {
+      if (!accessTokenFromHeader) {
         return next(new AuthFailureError("You are not authorized!"));
       }
       //Verify token
-      const accessTokenFromCookieDecoded = await this.authUtil.verifyToken(
-        accessTokenFromCookie,
+      const accessTokenDecoded = await this.authUtil.verifyToken(
+        accessTokenFromHeader,
         env.ACCESS_TOKEN_SECRET_SIGNATURE
       );
 
       //Attach user info to req object
-      req.user = accessTokenFromCookieDecoded;
+      req.user = accessTokenDecoded;
       return next();
     } catch (error) {
       //Nếu accessToken hết hạn thì mình cần trả về mã lỗi GONE - 410 cho FE để biết gọi lại API refresh token
