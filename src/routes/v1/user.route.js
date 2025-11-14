@@ -35,13 +35,6 @@ export default class UserRoute {
       asyncHandler(this.userController.getTotalFriends)
     );
 
-    // [GET] get user by id: user, admin
-    this.router.get(
-      "/:id",
-      asyncHandler(this.authMiddleware.isAuthorized),
-      asyncHandler(this.userController.getUserById)
-    );
-
     // [POST] create user: admin
     this.router.post(
       "/",
@@ -96,6 +89,26 @@ export default class UserRoute {
       asyncHandler(this.userController.rejectFriendRequest)
     );
 
+    // [GET] Lấy danh sách bạn bè của người dùng
+    this.router.get(
+      "/friends",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.userController.getFriends)
+    );
+
+    // [GET] Lấy danh sách lời mời kết bạn được gửi đến
+    this.router.get(
+      "/received-requests",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.userController.getReceivedRequests)
+    );
+
+    // [GET] get user by id: user, admin
+    this.router.get(
+      "/:id",
+      asyncHandler(this.authMiddleware.isAuthorized),
+      asyncHandler(this.userController.getUserById)
+    );
   }
 
   getRoute() {

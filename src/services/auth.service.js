@@ -54,7 +54,6 @@ export default class AuthService {
       env.ACCESS_TOKEN_SECRET_SIGNATURE,
       env.ACCESS_TOKEN_LIFE
     );
-    console.log("🚀 ~ AuthService ~ accessToken:", accessToken)
     const refreshToken = await this.authUtil.generateToken(
       payload,
       env.REFRESH_TOKEN_SECRET_SIGNATURE,

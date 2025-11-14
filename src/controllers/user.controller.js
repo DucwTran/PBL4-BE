@@ -96,4 +96,24 @@ export default class UserController {
       metadata: result,
     }).send(res);
   };
+
+  getFriends = async (req, res) => {
+    const userId = req.user.id;
+    const result = await this.userService.getFriends(userId);
+
+    return new OK({
+      message: "Get friends successfully!",
+      metadata: result,
+    }).send(res);
+  };
+
+  getReceivedRequests = async (req, res) => {
+    const userId = req.user.id; 
+    const result = await this.userService.getReceivedFriendRequests(userId);
+
+    return new OK({
+      message: "Get received friend requests successfully!",
+      metadata: result,
+    }).send(res);
+  };
 }

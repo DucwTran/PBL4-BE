@@ -221,4 +221,42 @@ export default class UserService {
     }
     return { totalFriends: user.friends.length };
   };
+
+  getFriends = async (userId) => {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new BadRequestError("ID không hợp lệ!");
+    }
+
+    const user = await this.userModel
+      .findById(userId)
+      .populate("friends", "email userName avatar role isActive");
+
+    if (!user) {
+      throw new NotFoundError("Không tìm thấy người dùng!");
+    }
+
+    return {
+      totalFriends: user.friends.length,
+      friends: user.friends,
+    };
+  };
+
+  getReceivedFriendRequests = async (userId) => {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new BadRequestError("ID không hợp lệ!");
+    }
+
+    const user = await this.userModel
+      .findById(userId)
+      .populate("receivedRequests", "email userName avatar");
+
+    if (!user) {
+      throw new NotFoundError("Không tìm thấy người dùng!");
+    }
+
+    return {
+      totalReceivedRequests: user.receivedRequests.length,
+      receivedRequests: user.receivedRequests,
+    };
+  };
 }

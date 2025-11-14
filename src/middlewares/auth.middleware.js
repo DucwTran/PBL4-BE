@@ -13,7 +13,7 @@ export default class AuthMiddleware {
   isAuthorized = async (req, res, next) => {
     // const accessTokenFromCookie = req.cookies?.accessToken;
     const accessTokenFromHeader = req.headers?.authorization?.split(' ')[1]
-    console.log(accessTokenFromHeader)
+    console.log("🚀 ~ AuthMiddleware ~ accessTokenFromHeader:", accessTokenFromHeader)
     try {
       if (!accessTokenFromHeader) {
         return next(new AuthFailureError("You are not authorized!"));
